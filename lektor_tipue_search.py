@@ -11,19 +11,38 @@ class TipueSearchPlugin(Plugin):
     name = u'Lektor Tipue Search'
     description = u'Serialize models contents for using tipue search.'
 
+    def __init__(self, *args, **kwargs):
+        Plugin.__init__(self, *args, **kwargs)
+        self.tipue_search = defaultdict(list)
+        self.enabled = False
+
+    def check_enabled(func):
+        def func_wrapper(self, *args, **kwargs):
+            if not self.enabled:
+                return
+            func(self, *args, **kwargs)
+
+        return func_wrapper
+
+    def on_server_spawn(self, **extra):
+        extra_flags = extra.get("extra_flags") \
+                      or extra.get("build_flags") or {}
+        self.enabled = bool(extra_flags.get('tipue'))
+
     def on_setup_env(self, **extra):
         #TODO load configurations
+        pass
 
-        self.tipue_search = defaultdict(list)
+    @check_enabled
+    def on_before_build_all(self, builder, **extra):
+        self.tipue_search.clear()
 
         self.output_path = 'tipue_search'
 
         if not os.path.exists(self.output_path):
             os.makedirs(self.output_path)
 
-    def on_before_build_all(self, builder, **extra):
-        self.tipue_search.clear()
-
+    @check_enabled
     def on_before_build(self, source, prog, **extra):
         if isinstance(source, Page):
             #FIXME at the moment only support blog-post
