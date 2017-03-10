@@ -16,6 +16,8 @@ class TipueSearchPlugin(Plugin):
         Plugin.__init__(self, *args, **kwargs)
         self.tipue_search = defaultdict(list)
         self.enabled = False
+        self.models = None
+        self.options = {'output_path': 'tipue-search', }
 
     def check_enabled(func):
         def func_wrapper(self, *args, **kwargs):
@@ -34,17 +36,27 @@ class TipueSearchPlugin(Plugin):
         self.models = defaultdict(dict)
 
         for key, item in self.get_config().items():
-            model, field = key.split('.')
-            self.models[model][field] = item
+            config_option = key.split('.')
+
+            # Load models configurations
+            if config_option[0] == 'model':
+                model, field = config_option[1:]
+                self.models[model][field] = item
+
+        for option in self.options.keys():
+            value = self.get_config().get(option)
+
+            if value is not None:
+                self.options[option] = value
 
     @check_enabled
     def on_before_build_all(self, builder, **extra):
         self.tipue_search.clear()
 
-        self.output_path = 'tipue_search'
-
-        if not os.path.exists(self.output_path):
-            os.makedirs(self.output_path)
+        output_path = os.path.join(builder.env.root_path,
+                                   self.options['output_path'])
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
 
     @check_enabled
     def on_before_build(self, source, prog, **extra):
@@ -61,7 +73,8 @@ class TipueSearchPlugin(Plugin):
     @check_enabled
     def on_after_build_all(self, builder, **extra):
         for alt, pages in self.tipue_search.items():
-            filename = os.path.join(builder.env.root_path, self.output_path,
+            filename = os.path.join(builder.env.root_path,
+                                    self.options['output_path'],
                                     'tipue_search_{}.json'.format(alt))
 
             try:
