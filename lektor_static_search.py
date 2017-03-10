@@ -2,6 +2,7 @@
 import os
 import json
 from collections import defaultdict
+from jinja2 import Undefined
 
 from lektor.reporter import reporter
 from lektor.pluginsystem import Plugin
@@ -65,7 +66,9 @@ class StaticSearchPlugin(Plugin):
             if source.datamodel.id in self.models:
                 model = self.models[source.datamodel.id]
 
-                item = {key: source[field] for key, field in model.items()}
+                item = {key: None if isinstance(source[field], Undefined) else
+                        source[field]
+                        for key, field in model.items()}
                 item['url'] = source.url_path
 
                 self.static_search[source.alt].append(item)
