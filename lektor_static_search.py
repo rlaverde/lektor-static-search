@@ -11,16 +11,20 @@ from lektor.db import Page
 
 class StaticSearchPlugin(Plugin):
     name = u'Lektor Static Search'
-    description = u'Serialize models contents for using with static search js libraries.'
+    description = (u'Serialize sources contents to json'
+                   'for using with static search js libraries.')
 
     def __init__(self, *args, **kwargs):
+        """Initialice class atributes and define options default values."""
         Plugin.__init__(self, *args, **kwargs)
         self.static_search = defaultdict(list)
         self.enabled = False
-        self.models = None
+        self.models = defaultdict(dict)
         self.options = {'output_path': 'static-search', }
 
     def check_enabled(func):
+        """Function decorator to deactivate functions if plugin isn't enabled."""
+
         def func_wrapper(self, *args, **kwargs):
             if not self.enabled:
                 return
@@ -29,13 +33,13 @@ class StaticSearchPlugin(Plugin):
         return func_wrapper
 
     def on_server_spawn(self, **extra):
+        """Check if plugin is active (i.e. static-search flag is present)."""
         extra_flags = extra.get("extra_flags") \
-                      or extra.get("build_flags") or {}
+            or extra.get("build_flags") or {}
         self.enabled = bool(extra_flags.get('static-search'))
 
     def on_setup_env(self, **extra):
-        self.models = defaultdict(dict)
-
+        """Load config options into self.models and self.options dicts."""
         for key, item in self.get_config().items():
             config_option = key.split('.')
 
@@ -52,6 +56,7 @@ class StaticSearchPlugin(Plugin):
 
     @check_enabled
     def on_before_build_all(self, builder, **extra):
+        """Delete previous contents of self.static_search dict, and create output folder."""
         self.static_search.clear()
 
         output_path = os.path.join(builder.env.root_path,
@@ -61,8 +66,8 @@ class StaticSearchPlugin(Plugin):
 
     @check_enabled
     def on_before_build(self, source, prog, **extra):
+        """Extract information from Sources and save it in self.staic_search dict."""
         if isinstance(source, Page):
-
             if source.datamodel.id in self.models:
                 model = self.models[source.datamodel.id]
 
@@ -75,11 +80,11 @@ class StaticSearchPlugin(Plugin):
 
     @check_enabled
     def on_after_build_all(self, builder, **extra):
+        """Dump each alternative entry of the self.staic_search dict to json and save it."""
         for alt, pages in self.static_search.items():
             filename = os.path.join(builder.env.root_path,
                                     self.options['output_path'],
                                     'static_search_{}.json'.format(alt))
-
             try:
                 with open(filename, 'r') as f:
                     contents = f.read()
@@ -90,5 +95,5 @@ class StaticSearchPlugin(Plugin):
                 with open(filename, 'w') as f:
                     f.write(json.dumps(pages))
 
-                reporter.report_generic('generated static search file{}'.format(
-                    filename))
+                reporter.report_generic(
+                    'generated static search file{}'.format(filename))
