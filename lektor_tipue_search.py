@@ -3,6 +3,7 @@ import os
 import json
 from collections import defaultdict
 
+from lektor.reporter import reporter
 from lektor.pluginsystem import Plugin
 from lektor.db import Page
 
@@ -53,14 +54,21 @@ class TipueSearchPlugin(Plugin):
 
                 self.tipue_search[source.alt].append(item)
 
+    @check_enabled
     def on_after_build_all(self, builder, **extra):
         for alt, pages in self.tipue_search.items():
             filename = os.path.join(builder.env.root_path, self.output_path,
                                     'tipue_search_{}.json'.format(alt))
 
-            with open(filename, 'r') as f:
-                contents = f.read()
+            try:
+                with open(filename, 'r') as f:
+                    contents = f.read()
+            except IOError:
+                contents = ""
 
             if contents != json.dumps(pages):
                 with open(filename, 'w') as f:
                     f.write(json.dumps(pages))
+
+                reporter.report_generic('generated tipue search file{}'.format(
+                    filename))
