@@ -31,8 +31,11 @@ class TipueSearchPlugin(Plugin):
         self.enabled = bool(extra_flags.get('tipue'))
 
     def on_setup_env(self, **extra):
-        #TODO load configurations
-        pass
+        self.models = defaultdict(dict)
+
+        for key, item in self.get_config().items():
+            model, field = key.split('.')
+            self.models[model][field] = item
 
     @check_enabled
     def on_before_build_all(self, builder, **extra):
@@ -46,13 +49,14 @@ class TipueSearchPlugin(Plugin):
     @check_enabled
     def on_before_build(self, source, prog, **extra):
         if isinstance(source, Page):
-            #FIXME at the moment only support blog-post
-            if source.datamodel.id == 'blog-post':
-                item = {'title': source['title'],
-                        'text': source['summary'],
-                        'tags': source['tags'], }
 
-                self.tipue_search[source.alt].append(item)
+            try:
+                model = self.models[source.datamodel.id]
+            except Exception:
+                return
+            item = {key: source[field] for key, field in model.items()}
+
+            self.tipue_search[source.alt].append(item)
 
     @check_enabled
     def on_after_build_all(self, builder, **extra):
