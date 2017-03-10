@@ -54,7 +54,8 @@ class TipueSearchPlugin(Plugin):
                 model = self.models[source.datamodel.id]
             except Exception:
                 return
-            item = {key: source[field] for key, field in model.items()}
+            item = {key: source[field] for key,field in model.items()}
+            item['url'] = source.url_path
 
             self.tipue_search[source.alt].append(item)
 
