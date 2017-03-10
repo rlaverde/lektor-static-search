@@ -8,12 +8,10 @@ This json files can be used with js libraries like [Tipue search](http://www.tip
 
 ## Enabling the Plugin
 
-> The plugin isn't published yet so you have to clone the repo into the packages folder
+To enable the plugin add this to your project file, run this command while sitting in your Lektor project directory:
 
 ```bash
-mkdir papckages
-cd packages
-git clone git@github.com:rlaverde/lektor-static-search.git
+lektor plugins add lektor-tipue-search
 ```
 
 ## Configurations
