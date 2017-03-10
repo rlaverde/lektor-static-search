@@ -1,8 +1,10 @@
-# lektor-tipue-search
+# lektor-static-search
 
 > This is under development
 
-This is a plugin for Lektor that adds support for [tipue search](http://www.tipue.com/search/) to projects. When enabled it can generate json files in the `tipue-search/` folder automatically when the server (or build process) is run with the `-f tipue` flag.
+This is a plugin for Lektor that adds support for static search to projects. When enabled it can generate json files in the `static-search/` folder automatically when the server (or build process) is run with the `-f static-search` flag.
+
+This json files can be used with js libraries like [Tipue search](http://www.tipue.com/search/) or [Lurn.js](http://lunrjs.com/).
 
 ## Enabling the Plugin
 
@@ -11,21 +13,21 @@ This is a plugin for Lektor that adds support for [tipue search](http://www.tipu
 ```bash
 mkdir papckages
 cd packages
-git clone git@github.com:rlaverde/lektor-tipue-search.git
+git clone git@github.com:rlaverde/lektor-static-search.git
 ```
 
 ## Configurations
 
 There are some globals configurations:
 
-`configs/tipue-search.ini:`
+`configs/static-search.ini:`
 
-    output_directory = tipue_search
+    output_directory = static_search
 
 
 Also you should add an entry for any model that you want to be generated into de json file (it should start by `model`)
 
-`configs/tipue-search.ini:`
+`configs/static-search.ini:`
 
 ```ini
 [model.blog-post]
@@ -58,7 +60,7 @@ choices = some_tag, another_tag
 
 and will generate a json file (for each alternative):
 
-`tipue_search/tipue_search_en.ini:`
+`static_search/static_search_en.ini:`
 
 ```json
 [{"url": "/blog/example",
@@ -72,5 +74,5 @@ and will generate a json file (for each alternative):
 ## Usage
 
 ```bash
-lektor build -f tipue
+lektor build -f static-search
 ```

@@ -8,16 +8,16 @@ from lektor.pluginsystem import Plugin
 from lektor.db import Page
 
 
-class TipueSearchPlugin(Plugin):
-    name = u'Lektor Tipue Search'
-    description = u'Serialize models contents for using tipue search.'
+class StaticSearchPlugin(Plugin):
+    name = u'Lektor Static Search'
+    description = u'Serialize models contents for using with static search js libraries.'
 
     def __init__(self, *args, **kwargs):
         Plugin.__init__(self, *args, **kwargs)
-        self.tipue_search = defaultdict(list)
+        self.static_search = defaultdict(list)
         self.enabled = False
         self.models = None
-        self.options = {'output_path': 'tipue-search', }
+        self.options = {'output_path': 'static-search', }
 
     def check_enabled(func):
         def func_wrapper(self, *args, **kwargs):
@@ -30,7 +30,7 @@ class TipueSearchPlugin(Plugin):
     def on_server_spawn(self, **extra):
         extra_flags = extra.get("extra_flags") \
                       or extra.get("build_flags") or {}
-        self.enabled = bool(extra_flags.get('tipue'))
+        self.enabled = bool(extra_flags.get('static-search'))
 
     def on_setup_env(self, **extra):
         self.models = defaultdict(dict)
@@ -51,7 +51,7 @@ class TipueSearchPlugin(Plugin):
 
     @check_enabled
     def on_before_build_all(self, builder, **extra):
-        self.tipue_search.clear()
+        self.static_search.clear()
 
         output_path = os.path.join(builder.env.root_path,
                                    self.options['output_path'])
@@ -68,14 +68,14 @@ class TipueSearchPlugin(Plugin):
                 item = {key: source[field] for key, field in model.items()}
                 item['url'] = source.url_path
 
-                self.tipue_search[source.alt].append(item)
+                self.static_search[source.alt].append(item)
 
     @check_enabled
     def on_after_build_all(self, builder, **extra):
-        for alt, pages in self.tipue_search.items():
+        for alt, pages in self.static_search.items():
             filename = os.path.join(builder.env.root_path,
                                     self.options['output_path'],
-                                    'tipue_search_{}.json'.format(alt))
+                                    'static_search_{}.json'.format(alt))
 
             try:
                 with open(filename, 'r') as f:
@@ -87,5 +87,5 @@ class TipueSearchPlugin(Plugin):
                 with open(filename, 'w') as f:
                     f.write(json.dumps(pages))
 
-                reporter.report_generic('generated tipue search file{}'.format(
+                reporter.report_generic('generated static search file{}'.format(
                     filename))
