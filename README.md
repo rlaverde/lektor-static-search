@@ -6,10 +6,12 @@ This is a plugin for Lektor that adds support for [tipue search](http://www.tipu
 
 ## Enabling the Plugin
 
-To enable the plugin add this to your project file, run this command while sitting in your Lektor project directory:
+> The plugin isn't published yet so you have to clone the repo into the packages folder
 
 ```bash
-lektor plugins add lektor-tipue-search
+mkdir papckages
+cd packages
+git clone git@github.com:rlaverde/lektor-tipue-search.git
 ```
 
 ## Configurations
