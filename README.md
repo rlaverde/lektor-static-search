@@ -11,7 +11,7 @@ This json files can be used with js libraries like [Tipue search](http://www.tip
 To enable the plugin add this to your project file, run this command while sitting in your Lektor project directory:
 
 ```bash
-lektor plugins add lektor-tipue-search
+lektor plugins add lektor-static-search
 ```
 
 ## Configurations
@@ -50,7 +50,7 @@ type = string
 label = Summary
 type = string
 
-fields.tags]
+[fields.tags]
 label = Tags
 type = checkboxes
 choices = some_tag, another_tag
