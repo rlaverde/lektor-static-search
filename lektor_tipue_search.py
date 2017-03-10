@@ -50,14 +50,13 @@ class TipueSearchPlugin(Plugin):
     def on_before_build(self, source, prog, **extra):
         if isinstance(source, Page):
 
-            try:
+            if source.datamodel.id in self.models:
                 model = self.models[source.datamodel.id]
-            except Exception:
-                return
-            item = {key: source[field] for key,field in model.items()}
-            item['url'] = source.url_path
 
-            self.tipue_search[source.alt].append(item)
+                item = {key: source[field] for key, field in model.items()}
+                item['url'] = source.url_path
+
+                self.tipue_search[source.alt].append(item)
 
     @check_enabled
     def on_after_build_all(self, builder, **extra):
