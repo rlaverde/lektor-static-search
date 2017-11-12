@@ -2,7 +2,7 @@
 
 > This is under development
 
-This is a plugin for Lektor that adds support for static search to projects. When enabled it can generate json files in the `static-search/` folder automatically when the server (or build process) is run with the `-f static-search` flag.
+This is a plugin for [Lektor](https://www.getlektor.com/) that adds support for static search to projects. When enabled it can generate json files in the `static-search/` folder automatically when the server (or build process) is run with the `-f static-search` flag.
 
 This json files can be used with js libraries like [Tipue search](http://www.tipue.com/search/) or [Lurn.js](http://lunrjs.com/).
 
