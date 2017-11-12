@@ -58,7 +58,7 @@ choices = some_tag, another_tag
 
 and will generate a json file (for each alternative):
 
-`static_search/static_search_en.ini:`
+`static_search/static_search_en.json:`
 
 ```json
 [{"url": "/blog/example",
